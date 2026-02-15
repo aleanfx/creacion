@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Producción de Video - Workflow Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #030508;
+            --accent-color: #f6d365;
+            --accent-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #b0b0cc;
+            --ios-radius: 24px;
+            --inner-radius: 18px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(246, 211, 101, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(253, 160, 133, 0.05) 0%, transparent 20%);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        /* Header animado */
+        .header {
+            padding: 60px 24px 40px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInDown 0.8s forwards;
+        }
+
+        @keyframes fadeInDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* Tarjeta de Paso */
+        .step-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--ios-radius);
+            margin-bottom: 32px;
+            padding: 24px;
+            position: relative;
+            backdrop-filter: blur(20px);
+            opacity: 0;
+            transform: scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+        }
+
+        .step-card.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .step-card:active {
+            transform: scale(0.98);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .step-badge {
+            background: var(--accent-gradient);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #000;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(246, 211, 101, 0.3);
+        }
+
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Contenido del paso */
+        .step-body {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .tool-highlight {
+            color: #f6d365;
+            font-weight: 600;
+        }
+
+        /* Imagen estilo iOS */
+        .image-container {
+            width: 100%;
+            border-radius: var(--inner-radius);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 15px;
+            background: #111;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .step-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .step-card:hover .step-img {
+            transform: scale(1.05);
+        }
+
+        /* Etiquetas */
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag.active {
+            border-color: #f6d365;
+            color: #f6d365;
+            background: rgba(246, 211, 101, 0.05);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.85rem;
+            color: rgba(176, 176, 204, 0.4);
+            letter-spacing: 1px;
+        }
+
+        /* Scroll Progress Bar */
+        #progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+            z-index: 1000;
+            transition: width 0.1s;
+        }
+
+        /* Floating particles effect (subtle) */
+        .bg-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(246, 211, 101, 0.07) 0%, transparent 70%);
+            z-index: -1;
+            border-radius: 50%;
+            filter: blur(50px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="progress"></div>
+    <div class="bg-glow" style="top: 10%; right: -50px;"></div>
+    <div class="bg-glow" style="bottom: 10%; left: -50px;"></div>
+
+    <header class="header">
+        <h1>GUÍA DE FLUJO</h1>
+        <p>Producción de Contenido de Alto Impacto</p>
+    </header>
+
+    <main class="container">
+
+        <!-- Paso 1 -->
+        <div class="step-card">
+            <div class="header-step">
+                <div class="step-header">
+                    <div class="step-badge">01</div>
+                    <div class="step-title">Curaduría Real</div>
+                </div>
+            </div>
+            <div class="step-body">
+                Busco historias y testimonios reales en <span class="tool-highlight">Google, Reddit</span> y <span
+                    class="tool-highlight">YouTube</span>. Si el testimonio es de video, descargo el audio y uso mi
+                <span class="tool-highlight">herramienta personalizada de transcripción</span> para convertirlo en texto
+                editable.
+            </div>
+            <div class="image-container">
+                <img src="11.png" alt="Paso 1" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">Investigación</span>
+                <span class="tag">Herramienta Propia</span>
+            </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-badge">02</div>
+                <div class="step-title">Reescritura Estratégica</div>
+            </div>
+            <div class="step-body">
+                Cuando no hay una historia exacta, utilizo <span class="tool-highlight">ChatGPT</span> para generar un
+                relato similar de entre <span class="tool-highlight">60,000 y 70,000 caracteres</span>. Me aseguro de
+                cambiar nombres, fechas y lugares para crear un contenido original y seguro.
+            </div>
+            <div class="image-container">
+                <img src="22.png" alt="Paso 2" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">ChatGPT</span>
+                <span class="tag">Guionismo</span>
+            </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-badge">03</div>
+                <div class="step-title">Control de Duración</div>
+            </div>
+            <div class="step-body">
+                Ajusto el volumen del texto para que se mantenga entre los <span class="tool-highlight">60,000-70,000
+                    caracteres</span>. Esto garantiza que el video final tenga una duración premium de entre <span
+                    class="tool-highlight">1h 10m y 1h 20m</span>.
+            </div>
+            <div class="image-container">
+                <img src="33.png" alt="Paso 3" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">Optimización</span>
+                <span class="tag">Métricas</span>
+            </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-badge">04</div>
+                <div class="step-title">Narración con Alma</div>
+            </div>
+            <div class="step-body">
+                Convierto el guion final a voz utilizando <span class="tool-highlight">Minimax</span>. Utilizo
+                tecnología de <span class="tool-highlight">clonación de voz</span> para que el relato se sienta humano,
+                cercano y profesional.
+            </div>
+            <div class="image-container">
+                <img src="444.png" alt="Paso 4" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">Minimax AI</span>
+                <span class="tag">Voz Clonada</span>
+            </div>
+        </div>
+
+        <!-- Paso 5 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-badge">05</div>
+                <div class="step-title">Storyboarding de Prompts</div>
+            </div>
+            <div class="step-body">
+                Le pido a <span class="tool-highlight">ChatGPT</span> prompts realistas de 1 sola línea, 100%
+                congruentes con la historia. Genero bloques de <span class="tool-highlight">200 prompts</span> a la vez
+                (equivalente a 20 minutos de video) para mantener la fluidez visual.
+            </div>
+            <div class="image-container">
+                <img src="555.png" alt="Paso 5" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">ChatGPT</span>
+                <span class="tag">Prompt Engineering</span>
+            </div>
+        </div>
+
+        <!-- Paso 6 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-badge">06</div>
+                <div class="step-title">Arte Visual Masivo</div>
+            </div>
+            <div class="step-body">
+                Utilizo <span class="tool-highlight">Whisk</span> para procesar cada prompt. Genero entre <span
+                    class="tool-highlight">700 y 800 imágenes</span> cinematográficas de alta calidad que cubren la
+                historia completa sin fisuras.
+            </div>
+            <div class="image-container">
+                <img src="666.png" alt="Paso 6" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">Whisk</span>
+                <span class="tag">IA Generativa</span>
+            </div>
+        </div>
+
+        <!-- Paso 7 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-badge">07</div>
+                <div class="step-title">Cinemáticas con Flow</div>
+            </div>
+            <div class="step-body">
+                Transformo las imágenes en clips animados usando <span class="tool-highlight">Flow (Veo 3)</span>. Cada
+                bloque de 200 clips se convierte en un segmento de 20 minutos de pura inmersión visual.
+            </div>
+            <div class="image-container">
+                <img src="777.png" alt="Paso 7" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">Flow Veo 3</span>
+                <span class="tag">Animación</span>
+            </div>
+        </div>
+
+        <!-- Paso 8 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-badge">08</div>
+                <div class="step-title">Montaje y Pulido</div>
+            </div>
+            <div class="step-body">
+                Llevo todo a <span class="tool-highlight">CapCut Desktop</span>. Aquí agrego <span
+                    class="tool-highlight">hooks</span> enganchantes al inicio, música de iglesia sin copyright, efectos
+                de sonido (SFX), transiciones y subtítulos dinámicos.
+            </div>
+            <div class="image-container">
+                <img src="88.png" alt="Paso 8" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">CapCut Desktop</span>
+                <span class="tag">Post-Producción</span>
+            </div>
+        </div>
+
+        <!-- Paso 9 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-badge">09</div>
+                <div class="step-title">Optimización CTR</div>
+            </div>
+            <div class="step-body">
+                Con <span class="tool-highlight">Gemini PRO</span> genero 2 miniaturas A/B de nivel profesional. Además,
+                pido a la IA <span class="tool-highlight">5 títulos virales</span> y una descripción enriquecida con
+                palabras clave para posicionamiento <span class="tool-highlight">SEO</span>.
+            </div>
+            <div class="image-container">
+                <img src="99.png" alt="Paso 9" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">Gemini PRO</span>
+                <span class="tag">Marketing Digital</span>
+            </div>
+        </div>
+
+        <!-- Paso 10 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-badge">10</div>
+                <div class="step-title">Entrega Final</div>
+            </div>
+            <div class="step-body">
+                Subo el material final a <span class="tool-highlight">Google Drive</span> para que el cliente lo
+                descargue. Envío de inmediato los títulos y la estrategia de descripción por <span
+                    class="tool-highlight">WhatsApp</span>.
+            </div>
+            <div class="image-container">
+                <img src="10.png" alt="Paso 10" class="step-img" onerror="this.style.display='none'">
+            </div>
+            <div class="tags-row">
+                <span class="tag active">Google Drive</span>
+                <span class="tag">Entrega</span>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        • EXCELENCIA EN CADA FRAME •
+    </footer>
+
+    <script>
+        // Animación de aparición al hacer scroll
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.step-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Barra de progreso
+        window.onscroll = function () {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress").style.width = scrolled + "%";
+        };
+    </script>
+</body>
+
+</html>
